@@ -11,9 +11,28 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return User::all();
+        if ($request->has('name'))
+        {
+        $bla =  User::where('name', 'like', '%'. $request->name .'%')->get(['name','gender','email','image','Status']);
+
+
+
+        return $bla;
+
+        }
+
+        return  User::all();
+        /**
+            شرح م.محمد علي بحث بصفه عامه
+                    $user = User::query();
+                    if($request->name)
+                    {
+                        $user->where('name',"like",$request->name);
+                    }
+                         return $user->get();
+         */
     }
 
     /**
@@ -82,17 +101,5 @@ class UserController extends Controller
     {
         //
     }
-    public function fileUpload(Request $request) {
-        $this->validate($request, ['image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,|max:2048',  ]);
-         $image = $request->file('image');
-          //  return response()->download($image);
-       //   return $image->getClientOriginalExtension();
-        $input['imagename'] = time().'.'.$image->getClientOriginalExtension();
-        $destinationPath = public_path('/images');
-        $image->move($destinationPath, $input['imagename']);
-    
-    
-    
-        return 'successImage Upload successful';
-    }
+
 }
