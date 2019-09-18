@@ -21,7 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::post('login', 'AuthController@login');
-Route::post('sigup', 'AuthController@sigup');
+Route::post('signup', 'AuthController@signup');
 
 
 
@@ -31,7 +31,7 @@ Route::post('sigup', 'AuthController@sigup');
 
 
 
-Route::resource('user', 'UserController');
+Route::get('user', 'UserController@index');
 Route::resource('comment', 'CommentController');
 
 
