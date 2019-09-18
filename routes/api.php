@@ -15,21 +15,23 @@ use Illuminate\Http\Request;
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+    Route::post('login', 'AuthController@login');
+
 
 });
 
 
 
-Route::post('login', 'AuthController@login');
 Route::post('signup', 'AuthController@signup');
 
 
 
 
+Route::put('user/{id}',  'UserController@update');
 
 
 
-
+Route::get('user/{id}', 'UserController@show');
 
 Route::get('user', 'UserController@index');
 Route::resource('comment', 'CommentController');
@@ -52,6 +54,7 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
+    Route::put('user/{id}/{update}',  'UserController@update');
 
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use JWTAuth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -11,6 +15,13 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
+    public function __construct()
+
+            {
+         //   $this->middleware('auth');
+            }
     public function index(Request $request)
     {
         if ($request->has('name'))
@@ -53,8 +64,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        User::create($request->all());
-        return "done";
+      //  User::create($request->all());
+     //   return "done";
     }
 
     /**
@@ -65,7 +76,21 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        /**
+         if( User::where('id' ,'=',$id)->get());
+        return "Error false";
+         return " Notfound";
+*/
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Sorry, user with id ' . $id . ' cannot be found'
+            ], 400);
+        }
+
+        return $user;
     }
 
     /**
@@ -86,11 +111,33 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
+
+        public function update(Request $request,$id)
+        {
+            $user = User::find($id);
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry, user with id ' . $id . ' cannot be found'
+                ], 400);
+            }
+
+            $updated = $user->fill($request->all())
+                ->save();
+
+            if ($updated) {
+                return response()->json([
+                    'success' => true
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry, user could not be updated'
+                ], 500);
+            }
+        }
     /**
      * Remove the specified resource from storage.
      *
