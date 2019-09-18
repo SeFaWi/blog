@@ -19,21 +19,16 @@ class AuthController extends Controller
     }
 
     public function sigup(request $request){
+        $request->validate([
+            'name'=>'required|string',
+            'email'=>'required|email|unique:users,email',
+            'password'=> 'required|min:6'
+        ]);
         $user = new User;
         $user->name = $request->name;
         $user->email = $request->email;
         $user->gender = $request->gender;
-
         $user->password = bcrypt($request->password);
-        $image = $request->file('image');
-        $input['imagename'] = time().'.'.$image->getClientOriginalExtension();
-        $destinationPath = public_path('/images');
-       $image->move($destinationPath, $input['imagename']);
-
-        $user->image='/images/'.$input['imagename'];
-
-
-
         $user->save();
 
         return " sigup done ";
