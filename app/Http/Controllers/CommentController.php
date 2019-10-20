@@ -8,6 +8,10 @@ use App\post;
 
 class CommentController extends Controller
 {
+    public function __construct()
+    {
+     $this->middleware('auth:api', ['except' => ['index','show']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +19,11 @@ class CommentController extends Controller
      */
     public function index()
     {
-        return  Comment::all();
+       
+        $comments = comment::query()->with('post');
+       
+
+        return $comments;
     }
 
     /**
@@ -36,8 +44,18 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
+        $this->validate($request, [
+            'body' => 'required|max:255',
+            'post_id' => 'required',
+        ]);
 
-        $Comment = new Comment;
+    	// $Comment = new Comment();
+
+        // $Comment->user_id = Auth::user()->id;
+        // $Comment->post_id = $request->post_id;
+        // $Comment->content = $request->content;
+        
+         $Comment = new Comment;
         $Comment->text=$request->text;
         $Comment->commentable_id=$request->commentable_id;
         $Comment->commentable_type=$request->commentable_type;
@@ -58,7 +76,7 @@ class CommentController extends Controller
      */
     public function show($id)
     {
-        return comment::find($id);
+       // return comment::find($id);
 
     }
 
@@ -82,7 +100,13 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $comment = Comment::find($id);
+
+       
+
+        $comment->comment = $request->comment;
+        $comment->save();
+        return 'comment updated';
     }
 
     /**
@@ -93,6 +117,9 @@ class CommentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $comment = Comment::find($id);
+        $post_id = $comment->post->id;
+        $comment->delete();
+        return 'comment deleted';
     }
 }

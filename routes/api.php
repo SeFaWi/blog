@@ -13,40 +13,20 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-    Route::post('login', 'AuthController@login');
-
-
-});
-
-
-
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+//     Route::post('login', 'AuthController@login');
+// });
+Route::post('login', 'AuthController@login');
 Route::post('signup', 'AuthController@signup');
-
-
-
-
 Route::put('user/{id}',  'UserController@update');
-
-
-
 Route::get('user/{id}', 'UserController@show');
-
 Route::get('user', 'UserController@index');
 Route::resource('comment', 'CommentController');
-
-
-
 //Route::get('postt', 'postController@getcomment');
-Route::resource('post', 'PostController');
-
+ Route::resource('posts', 'PostController');
+ Route::resource('comments', 'CommentController');
 Route::post('fileUpload', 'PostController@fileUpload');
-
-
-
-
-
 Route::group([
 
     'middleware' => 'api',

@@ -8,7 +8,7 @@ class Post extends Model
 {
 
     protected $fillable = [
-        'title' , ' body' , 'user_id' ,
+        'title' , 'body'
         ];
     public function user()
     {
@@ -25,8 +25,9 @@ class Post extends Model
 
     public function media()
     {
-        return $this->hasMany('App\Media');
+        return $this->hasMany('App\Media','post_id','id','media');
     }
+   
 
         public function tags()
     {

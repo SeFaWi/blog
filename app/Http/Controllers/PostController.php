@@ -4,50 +4,52 @@ namespace App\Http\Controllers;
 use App\post;
 use App\user;
 use App\comment;
-
+use Tymon\JWTAuth\Exceptions\JWTException;
+use JWTAuth;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+     $this->middleware('auth:api', ['except' => ['index','show']]);
+    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return  Post::paginate(10);
-        //$posts = post::all();
+        $posts = Post::query()->with('user');
+        if ($request->has('title')) { 
+            $posts=$posts->where('title', 'LIKE', "%$request->title%");
+          }
+          elseif ($request->has('id'))
+        {
+        $posts =  $posts->where('user_id', "$request->id");
+        }
+
+        return $posts->paginate(5);
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+  
     public function store(Request $request)
     {
-        $post = new post;
-        $post->title=$request->title;
-        $post->body=$request->body;
-        $post->user_id=$request->user_id;
+        JWTAuth::user()->posts()->create($request->all());
+        return 'Post created';
+
+        // $post = new post;
+        // $post->title=$request->title;
+        // $post->body=$request->body;
+        // $post->user_id=$request->user_id;
 
 
 
 
-        $post->save();
-        return "";
+        // $post->save();
+        // return "post created";
 
     }
 
@@ -59,43 +61,30 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //يجيب تعليقات ومن نزل من منشور
-       //$post = Post::findOrFail($id);
+        return Post::where('id',$id)->with('media','comments')->get();
 
-      // $test1 =  User::find($post->user_id);
-       //$test =  comment::where("post_id", $id)->get();
-       $post = Post::find($id);
+    //     //يجيب تعليقات ومن نزل من منشور
+    //    //$post = Post::findOrFail($id);
 
-       return $post->comments ;
-         //return $test;
-       // return Post::find($id);
+    //   // $test1 =  User::find($post->user_id);
+    //    //$test =  comment::where("post_id", $id)->get();
+    //    $post = Post::find($id);
 
-       //$post = Post::find($id);
+    //    return $post->comments ;
+    //      //return $test;
+    //    // return Post::find($id);
 
-      //  $test =  comment::where("post_id", $id)->get();
+    //    //$post = Post::find($id);
+
+    //   //  $test =  comment::where("post_id", $id)->get();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function update(Request $request, $id)
     {
-        //
+            JWTAuth::user()->posts()->findOrFail($id)->update($request->all());
+            return 'Post updated';
+        
     }
 
     /**
@@ -106,7 +95,8 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Post::findOrFail($id)->delete();
+        return 'Post deleted';
     }
     // public function getcomment($id){
     //     $post = Post::find($id);

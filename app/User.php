@@ -5,9 +5,11 @@ namespace App;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements JWTSubject
 {
+    use HasRoles;
     use Notifiable;
 
     /**
@@ -31,6 +33,10 @@ class User extends Authenticatable implements JWTSubject
     public function comments()
     {
         return $this->hasMany('App\Comment');
+    }
+    public function posts()
+    {
+        return $this->hasMany('App\Post');
     }
     /**
      * The attributes that should be cast to native types.
